@@ -9,4 +9,31 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## 
+## Progress Report (Ryan Riebesehl)
+
+```{r}
+library(Lahman)
+head(HallOfFame, 3)
+```
+
+
+```{r}
+#Converting to factors:
+HallOfFame$inducted <- as.factor(HallOfFame$inducted)
+HallOfFame$category <- as.factor(HallOfFame$category)
+
+#Getting rid of missing values:
+HallOfFame$ballots[is.na(HallOfFame$ballots)] <- mean(HallOfFame$ballots, na.rm = TRUE)
+
+HallOfFame$needed[is.na(HallOfFame$needed_note)] <- mean(HallOfFame$needed, na.rm = TRUE)
+
+HallOfFame$needed_note[is.na(HallOfFame$needed_note)] <- ""
+cleaned_HallOfFame_subset <- cleaned_HallOfFame_subset[!is.na(cleaned_HallOfFame_subset$votes), ]
+
+#Make sure that the player was inducted:
+cleaned_HallOfFame_subset <- cleaned_HallOfFame_subset[cleaned_HallOfFame_subset$inducted == "Y", ]
+
+#csv file:
+write.csv(cleaned_HallOfFame_subset, "cleaned_HallOfFame_subset.csv", row.names = FALSE)
+
+```
