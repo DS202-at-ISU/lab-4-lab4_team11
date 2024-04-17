@@ -1,0 +1,56 @@
+---
+title: "progress-report-drewKinneer"
+author: "Drew Kinneer"
+date: "2024-04-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+```{r}
+library(rvest)
+url <- "https://www.baseball-reference.com/awards/hof_2023.shtml"
+html <- read_html(url)
+html
+```
+
+```{r}
+tables <- html %>% html_table(fill=TRUE)
+tables %>% str()
+
+MyHallOfFame <- tables[[1]]
+colnames(MyHallOfFame) <- MyHallOfFame[1, ]
+MyHallOfFame <- MyHallOfFame[-1, ]
+MyHallOfFame <-  MyHallOfFame[, c(2, 4)]
+MyHallOfFame$Name <- gsub("X-", "", MyHallOfFame$Name)
+MyHallOfFame
+```
+
+```{r}
+library(Lahman)
+head(HallOfFame, 10)
+```
+
+```{r}
+FinalMyHallOfFame <- MyHallOfFame %>% mutate(
+  playerId = MyHallOfFame$Name,
+  yearID = 2023,
+  votedBy = "BBWAA",
+  ballots = 389,
+  needed = 292,
+  votes = MyHallOfFame$Votes,
+  inducted = ifelse(Votes>=292, "Y", "N"),
+  category = "Player",
+  needed_note = ""
+)
+FinalMyHallOfFame <- FinalMyHallOfFame[, -c(1, 2)]
+FinalMyHallOfFame
+```
+
+```{r}
+final <- rbind(FinalMyHallOfFame, HallOfFame)
+final
+```
