@@ -1,0 +1,83 @@
+---
+title: "progress-report-jennifergodbersen"
+author: "Jennifer"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+library(Lahman)
+head(HallOfFame, 100)
+```
+
+```{r}
+library(magrittr)
+library(ggplot2)
+
+HallOfFame %>%
+  ggplot(aes(x = yearID, fill = inducted)) +
+  geom_bar() +
+  xlim(c(1936, 2023))
+```
+
+
+
+```{r}
+library(rvest)
+url <- "https://www.baseball-reference.com/awards/hof_2023.shtml"
+html <- read_html(url)
+html
+
+```
+
+```{r}
+tables <- html %>% html_table(fill=TRUE)
+tables %>% str()
+```
+
+```{r}
+table2023 <- tables[[1]]
+
+table2023 %>% head()
+```
+
+```{r}
+#Fix column names in table2023
+
+# Transpose the first row of table2023 to get column names
+column_names <- t(table2023[1, ])
+
+# Set column names of table2023 to the transposed row
+colnames(table2023) <- column_names
+
+# Remove the first row from table2023
+table2023 <- table2023[-1, ]
+
+
+# Keep only the first 5 columns of table2023
+table2023 <- table2023[, 1:5]
+```
+
+```{r}
+table2023_2 <- table2023 %>% 
+  mutate(
+    playerID = Name,
+    yearID = 2023,
+    votedBy = "BBWAA",
+    ballots = 389,
+    needed = 202,
+    inducted = ifelse(Votes > 292, "Y", "N"), 
+    category = NA,
+    needed_note = NA
+  ) %>% 
+  rename_with(~ "votes", matches("^Votes$")) %>% 
+  select(-matches("^%vote$"), -matches("^YoB$"))
+
+````
+
