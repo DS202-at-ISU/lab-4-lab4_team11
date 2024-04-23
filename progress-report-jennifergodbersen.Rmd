@@ -58,26 +58,41 @@ colnames(table2023) <- column_names
 
 # Remove the first row from table2023
 table2023 <- table2023[-1, ]
+table2023 <-  table2023[, c(2, 4)]
 
+# Convert to numeric
+table2023$Votes <- as.numeric(table2023$Votes)
 
-# Keep only the first 5 columns of table2023
-table2023 <- table2023[, 1:5]
 ```
 
 ```{r}
-table2023_2 <- table2023 %>% 
+table2023 <- table2023 %>% 
   mutate(
     playerID = Name,
     yearID = 2023,
     votedBy = "BBWAA",
     ballots = 389,
     needed = 202,
+    votes = table2023$Votes,
     inducted = ifelse(Votes > 292, "Y", "N"), 
     category = NA,
     needed_note = NA
-  ) %>% 
-  rename_with(~ "votes", matches("^Votes$")) %>% 
-  select(-matches("^%vote$"), -matches("^YoB$"))
+  ) 
 
-````
+table2023 <- table2023[, -c(1, 2)]
+table2023
+```
+
+```{r}
+library(dplyr)
+hof_including_2023 <- bind_rows(HallOfFame, table2023)
+hof_including_2023
+```
+```{r}
+#replot up to 2023
+hof_including_2023 %>%
+  ggplot(aes(x = yearID, fill = inducted)) +
+  geom_bar() +
+  xlim(c(1936, 2023))
+```
 
