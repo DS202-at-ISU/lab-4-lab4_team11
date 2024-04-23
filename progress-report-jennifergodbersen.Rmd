@@ -66,6 +66,7 @@ table2023$Votes <- as.numeric(table2023$Votes)
 ```
 
 ```{r}
+library(dplyr)
 table2023 <- table2023 %>% 
   mutate(
     playerID = Name,
@@ -86,7 +87,6 @@ table2023
 ```{r}
 library(dplyr)
 hof_including_2023 <- bind_rows(HallOfFame, table2023)
-hof_including_2023
 ```
 ```{r}
 #replot up to 2023
